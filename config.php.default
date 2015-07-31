@@ -1,0 +1,18 @@
+<?php
+
+// Set Debug Level
+define('DEBUG', 2);
+
+// Set BaseDir
+define('BASE', dirname(__FILE__));
+
+// Set QueueDir
+define('QUEUE_DIR', BASE . DIRECTORY_SEPARATOR . 'queue');
+
+// Set TmpDir
+define('TEMP_DIR', BASE . DIRECTORY_SEPARATOR . 'tmp');
+
+// Set LogDir
+define('LOG_DIR', TEMP_DIR . DIRECTORY_SEPARATOR . 'log');
+
+?>
