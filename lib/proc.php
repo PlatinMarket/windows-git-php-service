@@ -66,4 +66,28 @@ if (!function_exists('executeCommand'))
   }
 }
 
+// Powershell Execute
+if (!function_exists('powershell'))
+{
+  function powershell($file, $args = array())
+  {
+    $command = BASE . DIRECTORY_SEPARATOR . 'powershell_scripts' . DIRECTORY_SEPARATOR . $file . '.ps1';
+    if (is_array($args) && !empty($args))
+    {
+      $tmp = $args;
+      $args = array();
+      foreach ($tmp as $key => $value)
+      {
+        if (is_string($value) || is_numeric($value))
+          $args[] = '-' . $key . ' ' . $value;
+        elseif (is_bool($value))
+          $args[] = '-' . $key . ' ' . ($value === true ? "$true" : "$false");
+      }
+      $command .= ' ' . (implode(' ', $args));
+    }
+    $result = executeCommand('powershell.exe -Mta -NoLogo -NonInteractive -executionpolicy remotesigned -File ' . $command, BASE);
+    return $result;
+  }
+}
+
 ?>

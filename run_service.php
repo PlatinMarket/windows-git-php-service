@@ -1,18 +1,13 @@
 <?php
 
-// Check config.php
-if (!file_exists('config.php')) throw new Exception('config.php is missing!');
-require_once 'config.php';
-
-// Include lib
-require_once 'lib.php';
+// Bootstrap
+require_once "/bootstrap.php";
 
 // Get queue
 $tasks = ReadQueue();
 
-
-foreach ($tasks as $file => $task) {
-
+foreach ($tasks as $file => $task)
+{
   try
   {
     $result = RunCommand($task['command'], $task['args']);
@@ -25,7 +20,6 @@ foreach ($tasks as $file => $task) {
     LogWrite('error', 'Error occured when processing command \'' . $task['command'] . '\'' . "\r\n" . $e->getMessage());
     continue;
   }
-
 }
 
 ?>

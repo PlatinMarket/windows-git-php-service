@@ -1,7 +1,7 @@
 <?php
 
 // Include SharedLib
-require_once '_shared.php';
+require_once '/lib/proc.php';
 
 // Main Function
 function git_branch($repo, $exArgs = array())
