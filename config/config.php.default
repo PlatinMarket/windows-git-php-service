@@ -6,6 +6,9 @@ define('DEBUG', 2);
 // Set BaseDir
 define('BASE', dirname(__FILE__));
 
+// Set ALLOW
+define('ALLOW', '*');
+
 // Set QueueDir
 define('QUEUE_DIR', BASE . DIRECTORY_SEPARATOR . 'queue');
 
