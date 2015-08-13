@@ -195,7 +195,8 @@ function CallTaskHooks($task, $message)
         CURLOPT_POST => TRUE,
         CURLOPT_RETURNTRANSFER => TRUE,
         CURLOPT_HTTPHEADER => array(
-            'Content-Type: ' . $contentType
+            'Content-Type: ' . $contentType,
+            'Ticket:' . $task['ticket']
         ),
         CURLOPT_POSTFIELDS => $message,
         CURLOPT_CONNECTTIMEOUT => 1,

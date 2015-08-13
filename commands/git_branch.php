@@ -1,9 +1,10 @@
 <?php
 
 // Main Function
-function git_branch_execute($repo, $exArgs = array())
+function git_branch_execute($repo)
 {
   $command = "git branch";
+  $exArgs = array_slice(func_get_args(), 1);
   if (is_array($exArgs) && !empty($exArgs)) $command .= " " . implode(' ', $exArgs);
   return executeCommand($command, $repo);
 }

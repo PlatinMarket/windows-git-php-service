@@ -32,6 +32,11 @@ $path = isset($_GET['path']) ? $_GET['path'] : '';
 // Get Rewrite Path Value
 $body = array('success' => 'ok', 'message' => 'System Ready');
 
+// Ping Service
+if (preg_match_all('/^ping\/?$/', $path)) {
+  $body = array('success' => 'ok', 'computer_name' => gethostname());
+} // END: Register New Ticket
+
 // Register New Ticket
 if (preg_match_all('/^register\/?$/', $path)) {
 

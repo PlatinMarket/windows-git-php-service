@@ -8,7 +8,7 @@ if (!file_exists($baseDir . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR
 require_once $baseDir . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.php';
 
 // Set Debug Level
-if (!defined('DEBUG')) define('DEBUG', 2);
+if (!defined('DEBUG')) define('DEBUG', 1);
 
 // Set BaseDir
 if (!defined('BASE')) define('BASE', dirname(__FILE__));
