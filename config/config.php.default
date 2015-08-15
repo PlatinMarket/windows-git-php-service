@@ -3,6 +3,12 @@
 // Set Debug Level
 define('DEBUG', 2);
 
+// Set Home Dir
+define('HOMEDIR', $_SERVER['USERPROFILE']);
+
+// Set Github Mail Addres
+define('GITHUB_MAIL', '');
+
 // Set BaseDir
 define('BASE', dirname(__FILE__));
 

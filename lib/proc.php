@@ -8,6 +8,7 @@ if (!function_exists('get_env'))
     $tmp = array_merge($_SERVER, $_ENV);
     $env = array();
     foreach ($tmp as $key => $value) if (!is_array($value)) $env[$key] = $value;
+    if (defined('HOMEDIR') && file_exists(HOMEDIR)) $env['USERPROFILE'] = HOMEDIR;
     return $env;
   }
 }

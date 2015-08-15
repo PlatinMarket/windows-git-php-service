@@ -32,10 +32,41 @@ $path = isset($_GET['path']) ? $_GET['path'] : '';
 // Get Rewrite Path Value
 $body = array('success' => 'ok', 'message' => 'System Ready');
 
+// Get SSH Key
+if (preg_match_all('/^public_key\/?$/', $path)) {
+
+  // Check If Already Created
+  $sshKeyFile = HOMEDIR . DIRECTORY_SEPARATOR . '.ssh' . DIRECTORY_SEPARATOR . 'id_rsa.pub';
+  if (file_exists($sshKeyFile))
+  {
+    $sshKey = trim(file_get_contents($sshKeyFile));
+    $body = array('success' => 'ok', 'public_key' => trim($sshKey));
+  }
+  else
+  {
+    // Create new one
+    $args = array('ssh-keygen', '-b', '4096', '-t', 'rsa', '-f', '~/.ssh/id_rsa' , '-q' , '-N', '""""');
+    if (defined('GITHUB_MAIL')) $args[] = '-C ' . GITHUB_MAIL;
+    $result = RunCommand('sh', $args);
+
+    // If Created Read
+    if ($result['exit_code'] == 0 && file_exists($sshKeyFile))
+    {
+      $sshKey = trim(file_get_contents($sshKeyFile));
+      $body = array('success' => 'ok', 'public_key' => trim($sshKey));
+    }
+    else
+    {
+      $body = array('success' => 'error', 'message' => $result['std_err']);
+    }
+  }
+
+} // END: Register New Ticket
+
 // Ping Service
 if (preg_match_all('/^ping\/?$/', $path)) {
   $body = array('success' => 'ok', 'computer_name' => gethostname());
-} // END: Register New Ticket
+} // END: Ping Service
 
 // Register New Ticket
 if (preg_match_all('/^register\/?$/', $path)) {
