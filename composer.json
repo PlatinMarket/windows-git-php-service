@@ -1,0 +1,12 @@
+{
+    "name": "root/windows-git-php-service",
+    "require": {
+        "phpseclib/phpseclib": "^2.0"
+    },
+    "authors": [
+        {
+            "name": "Burak Doğan",
+            "email": "bdogan85@gmail.com"
+        }
+    ]
+}

@@ -4,3 +4,5 @@ queue_error/
 config.php
 git_php_service.xml
 tmp/
+
+/vendor/

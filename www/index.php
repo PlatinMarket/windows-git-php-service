@@ -36,36 +36,40 @@ $body = array('success' => 'ok', 'message' => 'System Ready');
 if (preg_match_all('/^public_key\/?$/', $path)) {
 
   // Check If Already Created
-  $sshKeyFile = HOMEDIR . DIRECTORY_SEPARATOR . '.ssh' . DIRECTORY_SEPARATOR . 'id_rsa.pub';
-  if (file_exists($sshKeyFile))
-  {
-    $sshKey = trim(file_get_contents($sshKeyFile));
-    $body = array('success' => 'ok', 'public_key' => trim($sshKey));
-  }
-  else
-  {
-    // Create new one
-    $args = array('ssh-keygen', '-b', '4096', '-t', 'rsa', '-f', '~/.ssh/id_rsa' , '-q' , '-N', '""""');
-    if (defined('GITHUB_MAIL')) $args[] = '-C ' . GITHUB_MAIL;
-    $result = RunCommand('sh', $args);
+  $sshPublicKeyFile = HOMEDIR . DIRECTORY_SEPARATOR . '.ssh' . DIRECTORY_SEPARATOR . 'id_rsa.pub';
+  $sshPrivKeyFile = HOMEDIR . DIRECTORY_SEPARATOR . '.ssh' . DIRECTORY_SEPARATOR . 'id_rsa';
+  $comment = isset($_GET['mail']) ? $_GET['mail'] : APP_USER . '@' . gethostname();
 
-    // If Created Read
-    if ($result['exit_code'] == 0 && file_exists($sshKeyFile))
+  $sshPublicKey = null;
+  if (file_exists($sshPublicKeyFile) && file_exists($sshPrivKeyFile))
+  {
+    // Read Public Key
+    $sshPublicKey = trim(file_get_contents($sshPublicKeyFile));
+    // Check Key Comment Match If Not Create New One
+    if (strpos($sshPublicKey, $comment) === false) $sshPublicKey = null;
+  }
+
+  if (is_null($sshPublicKey))
+  {
+    try
     {
-      $sshKey = trim(file_get_contents($sshKeyFile));
-      $body = array('success' => 'ok', 'public_key' => trim($sshKey));
+      // Generate New Public Key
+      $sshPublicKey = generateSSHKeys($sshPublicKeyFile, $sshPrivKeyFile, $comment);
     }
-    else
+    catch (Exception $e)
     {
-      $body = array('success' => 'error', 'message' => $result['std_err']);
+      $body = array('success' => 'error', 'message' => $e->getMessage());
     }
   }
+
+  if ($body['success'] !== 'error')
+    $body = array('success' => 'ok', 'public_key' => $sshPublicKey);
 
 } // END: Register New Ticket
 
 // Ping Service
 if (preg_match_all('/^ping\/?$/', $path)) {
-  $body = array('success' => 'ok', 'computer_name' => gethostname());
+  $body = array('success' => 'ok', 'computer_name' => gethostname(), 'user' => APP_USER);
 } // END: Ping Service
 
 // Register New Ticket
@@ -103,7 +107,6 @@ if (preg_match_all('/^register\/?$/', $path)) {
   }
 } // END: Register New Ticket
 
-
 // Register Ticket Backend Function
 function RegisterTicket($command, $args = array(), $hooks = array()){
 
@@ -134,6 +137,36 @@ function RegisterTicket($command, $args = array(), $hooks = array()){
   return $ticket['ticket'];
 }
 
+// Generate SSH Key Pair OPEN_SSH Format
+function generateSSHKeys($sshPublicKeyFile, $sshPrivKeyFile, $comment)
+{
+  try
+  {
+    // Create new one
+    $rsa = new phpseclib\Crypt\RSA();
+    // Change Output format to OpenSSH
+    $rsa->setPublicKeyFormat(phpseclib\Crypt\RSA::PUBLIC_FORMAT_OPENSSH);
+    // Set Comment
+    $rsa->setComment($comment);
+    // Set Key Length And Create
+    $result = $rsa->createKey(2048);
+    // Save Public Key
+    $sshPublicKey = $result['publickey'];
+    if (file_exists($sshPublicKeyFile)) unlink($sshPublicKeyFile);
+    file_put_contents($sshPublicKeyFile, $sshPublicKey);
+    // Save Private Key
+    $sshPrivKey = $result['privatekey'];
+    if (file_exists($sshPrivKeyFile)) unlink($sshPrivKeyFile);
+    file_put_contents($sshPrivKeyFile, $sshPrivKey);
+    // Return Public Key
+    return $sshPublicKey;
+  }
+  catch (Exception $e)
+  {
+    throw $e;
+  }
+}
+
 // Run Schulde Task For Run Tasks
 function runTask()
 {
@@ -162,6 +195,9 @@ function getGUID(){
 
 // Add Host to Response
 $body['host'] = gethostname();
+
+// Add User to Response
+$body['user'] = APP_USER;
 
 // Pump Json To Response
 echo json_encode($body);

@@ -7,6 +7,9 @@ $baseDir = dirname(__FILE__);
 if (!file_exists($baseDir . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.php')) throw new Exception('config.php is missing!');
 require_once $baseDir . DIRECTORY_SEPARATOR . 'config' . DIRECTORY_SEPARATOR . 'config.php';
 
+// Get Composer autoload file
+require_once $baseDir . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
+
 // Set Debug Level
 if (!defined('DEBUG')) define('DEBUG', 1);
 
