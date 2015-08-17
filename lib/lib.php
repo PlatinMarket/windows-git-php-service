@@ -25,6 +25,43 @@ function LogWrite($fileName = 'debug', $message) {
   }
 }
 
+//Parse Git Url From any url string
+function parseUrl($stdOut)
+{
+  $remotePath = str_replace(
+    array('git://github.com/', 'git@github.com:', 'https://github.com/', '.git'),
+    array('', '', '', ''),
+    $stdOut
+  );
+  $returnArr = array(
+    'clone_url' => 'https://github.com/' . $remotePath . '.git',
+    'git_url' => 'git://github.com/' . $remotePath . '.git',
+    'ssh_url' => 'git@github.com:' . $remotePath . '.git',
+    'html_url' => 'https://github.com/' . $remotePath
+  );
+  return $returnArr;
+}
+
+// Parse Branches From STDOUT
+function parseBranches($stdOut)
+{
+  $branches = explode("\n", $stdOut);
+  $currentBranch = "";
+  foreach ($branches as $key => $value)
+  {
+    if (strpos($value, '*') === 0)
+    {
+      $value = str_replace('* ', '', $value);
+      $currentBranch = $value;
+    }
+    $branches[$key] = trim($value);
+  }
+  return array(
+    "all" => $branches,
+    "current" => $currentBranch
+  );
+}
+
 function ReadQueue()
 {
   $tasks = array();

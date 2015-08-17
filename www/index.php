@@ -32,6 +32,55 @@ $path = isset($_GET['path']) ? $_GET['path'] : '';
 // Get Rewrite Path Value
 $body = array('success' => 'ok', 'message' => 'System Ready');
 
+// Get Repository Info
+if (preg_match_all('/^repository_info\/?$/', $path)) {
+
+  // Get & Parse Request Body
+  $requestBody = @file_get_contents('php://input');
+  $requestJson = @json_decode($requestBody, true);
+
+  // Set Values
+  $path = isset($requestJson['remote_path']) ? $requestJson['remote_path'] : null;
+
+  // Check Values
+  if (is_null($path) || !is_string($path))
+  {
+    http_response_code(400);
+    $body = array('success' => 'error', 'message' => 'Bad request', 'code' => 400);
+  }
+  elseif (!empty($path) && is_string($path) && !file_exists($path))
+  {
+    http_response_code(404);
+    $body = array('success' => 'error', 'message' => 'Repository \'' . $path . '\' not found', 'code' => 404);
+  }
+  else
+  {
+    // Check Repository
+    try
+    {
+      // Check if bare
+      $is_bare = executeCommand("git rev-parse --is-bare-repository", $path);
+      if ($is_bare['exit_code'] !== 0) throw new Exception("Not a git repository (or any of the parent directories)", 404);
+      $is_bare = $is_bare['std_out'] == "true" ? true : false;
+      // Check origin url
+      $repository_url = executeCommand("git config --get remote.origin.url", $path);
+      if ($repository_url['exit_code'] !== 0) throw new Exception("Repository has not any remote origin", 404);
+      $repository_url = parseUrl($repository_url['std_out']);
+      // Check Branch
+      $branch = executeCommand("git branch", $path);
+      if ($branch['exit_code'] !== 0) throw new Exception("Repository has not any branch", 404);
+      $branch = parseBranches($branch['std_out']);
+      $body = array('success' => 'ok', 'respository' => array_merge($repository_url, array('is_bare' => $is_bare, 'branch' => $branch)));
+    }
+    catch (Exception $e)
+    {
+      $code = $e->getCode() ? $e->getCode() : 500;
+      http_response_code($code);
+      $body = array('success' => 'error', 'message' => $e->getMessage(), 'code' => $code);
+    }
+  }
+}
+
 // Get SSH Key
 if (preg_match_all('/^public_key\/?$/', $path)) {
 
