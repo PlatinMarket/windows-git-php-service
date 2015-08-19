@@ -70,7 +70,7 @@ if (preg_match_all('/^repository_info\/?$/', $path)) {
       $branch = executeCommand("git branch", $path);
       if ($branch['exit_code'] !== 0) throw new Exception("Repository has not any branch", 404);
       $branch = parseBranches($branch['std_out']);
-      $body = array('success' => 'ok', 'respository' => array_merge($repository_url, array('is_bare' => $is_bare, 'branch' => $branch)));
+      $body = array('success' => 'ok', 'repository' => array_merge($repository_url, array('is_bare' => $is_bare, 'branch' => $branch)));
     }
     catch (Exception $e)
     {
