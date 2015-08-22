@@ -121,6 +121,45 @@ if (preg_match_all('/^ping\/?$/', $path)) {
   $body = array('success' => 'ok', 'computer_name' => gethostname(), 'user' => APP_USER);
 } // END: Ping Service
 
+// Check directory exists
+if (preg_match_all('/^check_directory\/?$/', $path)) {
+
+  // Get & Parse Request Body
+  $requestBody = @file_get_contents('php://input');
+  $requestJson = @json_decode($requestBody, true);
+
+  // Set Values
+  $directory = isset($requestJson['directory']) ? $requestJson['directory'] : null;
+
+  // Check Values
+  if (is_null($directory) || !is_string($directory))
+  {
+    http_response_code(400);
+    $body = array('success' => 'error', 'message' => 'Bad Request', 'code' => 400);
+  }
+  else
+  {
+    try
+    {
+      $folder_exists = file_exists($directory);
+      $dirname = dirname($directory);
+      $folder = null;
+      if (!$folder_exists)
+      {
+        $folder = str_replace($dirname . DIRECTORY_SEPARATOR, '', $directory);
+        if (!file_exists($dirname)) mkdir($dirname, null, true);
+      }
+      $body = array('success' => 'error', 'exists' => $folder_exists, 'dirname' => $dirname, 'folder' => $folder);
+    }
+    catch (Exception $e)
+    {
+      http_response_code(500);
+      $body = array('success' => 'error', 'message' => $e->getMessage(), 'code' => $e->getCode());
+    }
+  }
+
+} // END: Check directory exists
+
 // Register New Ticket
 if (preg_match_all('/^register\/?$/', $path)) {
 

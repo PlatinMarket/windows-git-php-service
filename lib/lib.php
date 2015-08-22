@@ -213,6 +213,7 @@ function CallTaskHooks($task, $message)
   // Set Default ContentType to json if message is array
   if (is_array($message))
   {
+    $message['ticket'] = $task['ticket'];
     $message = json_encode($message);
     $contentType = 'application/json';
   }
