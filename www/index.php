@@ -62,6 +62,23 @@ if (preg_match_all('/^repository_info\/?$/', $path)) {
       $is_bare = executeCommand("git rev-parse --is-bare-repository", $path);
       if ($is_bare['exit_code'] !== 0) throw new Exception("Not a git repository (or any of the parent directories)", 404);
       $is_bare = $is_bare['std_out'] == "true" ? true : false;
+      // Get Head Hash
+      $hash_code = executeCommand("git rev-parse HEAD", $path);
+      if ($hash_code['exit_code'] !== 0) throw new Exception("Repository getting HEAD hash failed", 500);
+      $hash_code = trim($hash_code['std_out']);
+      // Get Last Head Timespan
+      try
+      {
+        $headFile = $path . DIRECTORY_SEPARATOR . ".git" . DIRECTORY_SEPARATOR . "FETCH_HEAD";
+        if (!file_exists($headFile))
+          $head_timespan = 0;
+        else
+          $head_timespan = @filemtime($headFile);
+      }
+      catch (Exception $e)
+      {
+        $head_timespan = null;
+      }
       // Check origin url
       $repository_url = executeCommand("git config --get remote.origin.url", $path);
       if ($repository_url['exit_code'] !== 0) throw new Exception("Repository has not any remote origin", 404);
@@ -70,7 +87,7 @@ if (preg_match_all('/^repository_info\/?$/', $path)) {
       $branch = executeCommand("git branch", $path);
       if ($branch['exit_code'] !== 0) throw new Exception("Repository has not any branch", 404);
       $branch = parseBranches($branch['std_out']);
-      $body = array('success' => 'ok', 'repository' => array_merge($repository_url, array('is_bare' => $is_bare, 'branch' => $branch)));
+      $body = array('success' => 'ok', 'repository' => array_merge($repository_url, array('is_bare' => $is_bare, 'branch' => $branch, 'hash' => $hash_code, 'head_timespan' => $head_timespan)));
     }
     catch (Exception $e)
     {
