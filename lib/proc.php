@@ -43,23 +43,23 @@ if (!function_exists('executeCommand'))
         // Close StdIn Future Use
         fclose($pipes[0]);
 
-        // Capture StdOut
-        while($s = fgets($pipes[1], 1024)) $result['std_out'] .= $s;
-
-        // Close StdOut
-        fclose($pipes[1]);
-
         // Capture StdErr
         while($s = fgets($pipes[2], 1024)) $result['std_err'] .= $s;
 
         // Close StdErr
         fclose($pipes[2]);
 
+        // Capture StdOut
+        while($s = fgets($pipes[1], 1024)) $result['std_out'] .= $s;
+
+        // Close StdOut
+        fclose($pipes[1]);
+
         // Capture ExitCode
         $result['exit_code'] = proc_close($process);
 
         // Parse StdOut(s)
-        $result['std_out'] = trim($result['std_out']);
+        $result['std_out'] = trim(str_replace("***done***", "", $result['std_out']));
         $result['std_err'] = trim($result['std_err']);
     }
 

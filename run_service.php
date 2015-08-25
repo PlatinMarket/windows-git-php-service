@@ -27,4 +27,6 @@ foreach ($tasks as $file => $task)
   unlink($file);
 }
 
+fwrite(STDOUT, '***done***');
+exit(0);
 ?>
