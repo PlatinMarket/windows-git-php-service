@@ -69,7 +69,10 @@ if (preg_match_all('/^repository_info\/?$/', $path)) {
       // Get Last Head Timespan
       try
       {
-        $headFile = $path . DIRECTORY_SEPARATOR . ".git" . DIRECTORY_SEPARATOR . "FETCH_HEAD";
+        if ($is_bare)
+          $headFile = $path . DIRECTORY_SEPARATOR . "FETCH_HEAD";
+        else
+          $headFile = $path . DIRECTORY_SEPARATOR . ".git" . DIRECTORY_SEPARATOR . "FETCH_HEAD";
         if (!file_exists($headFile))
           $head_timespan = 0;
         else

@@ -27,6 +27,9 @@ foreach ($tasks as $file => $task)
   unlink($file);
 }
 
+// Trigger Stdout Flush
 fwrite(STDOUT, '***done***');
+
+// Exit Sub Command
 exit(0);
 ?>
