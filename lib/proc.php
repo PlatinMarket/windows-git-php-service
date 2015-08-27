@@ -40,6 +40,11 @@ if (!function_exists('executeCommand'))
     // Check if resource created
     if (is_resource($process))
     {
+        // Propage STDIN
+        fwrite($pipes[0], "\n");
+        fwrite($pipes[0], "\n");
+        fwrite($pipes[0], "\n");
+
         // Close StdIn Future Use
         fclose($pipes[0]);
 
