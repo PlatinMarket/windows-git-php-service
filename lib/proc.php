@@ -25,7 +25,7 @@ if (!function_exists('executeCommand'))
     $descriptorspec = array(
        0 => array("pipe", "r"),
        1 => array("pipe", "w"),
-       2 => array("pipe", "w")
+       2 => array("pipe", "a")
     );
 
     // für Windows
@@ -36,6 +36,8 @@ if (!function_exists('executeCommand'))
 
     // Process execute
     $process = proc_open($command, $descriptorspec, $pipes, $run_dir, get_env(), $options);
+
+    stream_set_blocking($pipes[2], 0);
 
     // Check if resource created
     if (is_resource($process))
