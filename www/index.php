@@ -278,7 +278,11 @@ function generateSSHKeys($sshPublicKeyFile, $sshPrivKeyFile, $comment)
 // Run Schulde Task For Run Tasks
 function runTask()
 {
-  $null = powershell('start_task', array('taskName' => 'git_php_service'));
+  if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
+  {
+    $null = powershell('start_task', array('taskName' => 'git_php_service'));
+    return;
+  }
 }
 
 // Generate GUID

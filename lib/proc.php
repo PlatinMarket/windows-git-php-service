@@ -28,24 +28,30 @@ if (!function_exists('executeCommand'))
        2 => array("pipe", "a")
     );
 
-    // für Windows
-    $options = array(
-      'bypass_shell' => true,
-      'suppress_errors' => true
-    );
+    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
+    {
+      // für Windows
+      $options = array(
+        'bypass_shell' => true,
+        'suppress_errors' => true
+      );
+    }
 
     // Process execute
     $process = proc_open($command, $descriptorspec, $pipes, $run_dir, get_env(), $options);
 
-    stream_set_blocking($pipes[2], 0);
+    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') stream_set_blocking($pipes[2], 0);
 
     // Check if resource created
     if (is_resource($process))
     {
-        // Propage STDIN
-        fwrite($pipes[0], "\n");
-        fwrite($pipes[0], "\n");
-        fwrite($pipes[0], "\n");
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
+        {
+          // Propage STDIN
+          fwrite($pipes[0], "\n");
+          fwrite($pipes[0], "\n");
+          fwrite($pipes[0], "\n");
+        }
 
         // Close StdIn Future Use
         fclose($pipes[0]);
