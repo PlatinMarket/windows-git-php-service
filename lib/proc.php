@@ -28,6 +28,7 @@ if (!function_exists('executeCommand'))
        2 => array("pipe", "w")
     );
 
+    $options = array();
     if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
     {
       // für Windows
