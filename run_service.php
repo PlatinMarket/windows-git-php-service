@@ -4,7 +4,7 @@
 set_time_limit(0);
 
 // Bootstrap
-require_once "/bootstrap.php";
+require_once "bootstrap.php";
 
 // Get queue
 $tasks = ReadQueue();
