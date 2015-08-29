@@ -11,5 +11,5 @@ if (($task = Get-ScheduledTask -TaskName $taskName) -eq $null) {
   exit(2)
 }
 
-Write-Host $task.State
+Write-Host $task.State.value__
 exit(0)

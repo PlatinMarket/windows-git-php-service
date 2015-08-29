@@ -19,7 +19,7 @@ if ($task.State -ne "ready") {
 <# Start Task #>
 try {
   Start-ScheduledTask -TaskName $taskName | Out-Null
-  Write-Host "Task Started"
+  Write-Host $task.State.value__
   exit(0)
 } catch {
   Write-Host $_.Exception.Message

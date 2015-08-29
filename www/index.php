@@ -180,6 +180,62 @@ if (preg_match_all('/^check_directory\/?$/', $path)) {
 
 } // END: Check directory exists
 
+// Get All Task
+if (preg_match_all('/^tasks\/index\/?$/', $path)) {
+  try
+  {
+    $tasks = powershell('task_list');
+    if ($tasks['exit_code'] !== 0) throw new Exception($tasks['std_err'] ? $tasks['std_err'] : $tasks['std_out']);
+    $tasks = json_decode($tasks['std_out'], true);
+    $body = array('success' => 'ok', 'tasks' => $tasks);
+  }
+  catch (Exception $e)
+  {
+    http_response_code(500);
+    $body = array('success' => 'error', 'message' => $e->getMessage(), 'code' => $e->getCode());
+  }
+} // END: Get All Task
+
+// Start Task By Name
+if (preg_match_all('/^tasks\/start\/?$/', $path)) {
+
+  // Set Values
+  $taskName = isset($_GET['name']) ? $_GET['name'] : null;
+
+  try
+  {
+    $state = powershell('start_task', array('taskName' => $taskName));
+    if ($state['exit_code'] !== 0) throw new Exception($state['std_err'] ? $state['std_err'] : $state['std_out']);
+    $state = intval($state['std_out']);
+    $body = array('success' => 'ok', 'task' => array('Taskname' => $taskName, 'State' => $state));
+  }
+  catch (Exception $e)
+  {
+    http_response_code(500);
+    $body = array('success' => 'error', 'message' => $e->getMessage());
+  }
+} // END: Start Task By Name
+
+// Task State By Name
+if (preg_match_all('/^tasks\/state\/?$/', $path)) {
+
+  // Set Values
+  $taskName = isset($_GET['name']) ? $_GET['name'] : null;
+
+  try
+  {
+    $state = powershell('task_state', array('taskName' => $taskName));
+    if ($state['exit_code'] !== 0) throw new Exception($state['std_err'] ? $state['std_err'] : $state['std_out']);
+    $state = intval($state['std_out']);
+    $body = array('success' => 'ok', 'task' => array('Taskname' => $taskName, 'State' => $state));
+  }
+  catch (Exception $e)
+  {
+    http_response_code(500);
+    $body = array('success' => 'error', 'message' => $e->getMessage());
+  }
+} // END: Task State By Name
+
 // Register New Ticket
 if (preg_match_all('/^register\/?$/', $path)) {
 
