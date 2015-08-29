@@ -11,9 +11,9 @@ if (($task = Get-ScheduledTask -TaskName $taskName) -eq $null) {
   exit(2)
 }
 
-<# Start Task #>
+<# Stop Task #>
 try {
-  Start-ScheduledTask -TaskName $taskName | Out-Null
+  Stop-ScheduledTask -TaskName $taskName | Out-Null
   Write-Host $task.State.value__
   exit(0)
 } catch {

@@ -216,6 +216,26 @@ if (preg_match_all('/^tasks\/start\/?$/', $path)) {
   }
 } // END: Start Task By Name
 
+// Stop Task By Name
+if (preg_match_all('/^tasks\/stop\/?$/', $path)) {
+
+  // Set Values
+  $taskName = isset($_GET['name']) ? $_GET['name'] : null;
+
+  try
+  {
+    $state = powershell('stop_task', array('taskName' => $taskName));
+    if ($state['exit_code'] !== 0) throw new Exception($state['std_err'] ? $state['std_err'] : $state['std_out']);
+    $state = intval($state['std_out']);
+    $body = array('success' => 'ok', 'task' => array('Taskname' => $taskName, 'State' => $state));
+  }
+  catch (Exception $e)
+  {
+    http_response_code(500);
+    $body = array('success' => 'error', 'message' => $e->getMessage());
+  }
+} // END: Stop Task By Name
+
 // Task State By Name
 if (preg_match_all('/^tasks\/state\/?$/', $path)) {
 
