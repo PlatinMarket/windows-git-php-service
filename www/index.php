@@ -316,7 +316,8 @@ function RegisterTicket($command, $args = array(), $hooks = array()){
   }
 
   // Register Task Run Before Exit Script
-  register_shutdown_function('runTask');
+  // Disabled for timeout problem
+  // register_shutdown_function('runTask');
 
   return $ticket['ticket'];
 }
